@@ -1,14 +1,13 @@
-package service
+package pull_request
 
 import (
 	"context"
-	"errors"
 	"service-order-avito/internal/domain"
 	"service-order-avito/internal/domain/dto"
-	"service-order-avito/internal/domain/errors/repository"
-	"service-order-avito/internal/domain/errors/service"
+	"service-order-avito/internal/service/error_wrapper"
 )
 
+// mockgen -source="internal/service/pull_request/pull_request.go" -destination="internal/service/pull_request/mocks/mock_pull_request_repository.go" -package=mocks PullRequestRepository
 type PullRequestRepository interface {
 	CreateWithReviewers(context.Context, domain.PullRequest) (*domain.PullRequestWithReviewers, error)
 	Merge(context.Context, string) (*domain.PullRequestWithReviewers, error)
@@ -33,16 +32,7 @@ func (s *pullRequestService) Create(ctx context.Context, req *dto.PullRequestCre
 
 	prWithReviewers, err := s.repo.CreateWithReviewers(ctx, prDomain)
 	if err != nil {
-		switch {
-		case errors.Is(err, repository.ErrUserNotFound):
-			return nil, service.ErrUserNotFound
-		case errors.Is(err, repository.ErrTeamNotFound):
-			return nil, service.ErrTeamNotFound
-		case errors.Is(err, repository.ErrPullRequestExists):
-			return nil, service.ErrPullRequestExists
-		default:
-			return nil, service.ErrInternalError
-		}
+		return nil, error_wrapper.WrapRepositoryError(err)
 	}
 
 	resp := &dto.PullRequestCreateResponse{
@@ -61,12 +51,7 @@ func (s *pullRequestService) Create(ctx context.Context, req *dto.PullRequestCre
 func (s *pullRequestService) Merge(ctx context.Context, req *dto.PullRequestMergeRequest) (*dto.PullRequestMergeResponse, error) {
 	prWithReviewers, err := s.repo.Merge(ctx, req.PullRequestID)
 	if err != nil {
-		switch {
-		case errors.Is(err, repository.ErrPullRequestNotFound):
-			return nil, service.ErrPullRequestNotFound
-		default:
-			return nil, service.ErrInternalError
-		}
+		return nil, error_wrapper.WrapRepositoryError(err)
 	}
 
 	resp := &dto.PullRequestMergeResponse{
@@ -86,20 +71,7 @@ func (s *pullRequestService) Merge(ctx context.Context, req *dto.PullRequestMerg
 func (s *pullRequestService) ReassignReviewer(ctx context.Context, req *dto.PullRequestReassignRequest) (*dto.PullRequestReassignResponse, error) {
 	reviewer, err := s.repo.ReassignReviewer(ctx, req.PullRequestID, req.OldReviewerID)
 	if err != nil {
-		switch {
-		case errors.Is(err, repository.ErrPullRequestNotFound):
-			return nil, service.ErrPullRequestNotFound
-		case errors.Is(err, repository.ErrUserNotFound):
-			return nil, service.ErrUserNotFound
-		case errors.Is(err, repository.ErrPullRequestMerged):
-			return nil, service.ErrPullRequestMerged
-		case errors.Is(err, repository.ErrReviewerNotAssigned):
-			return nil, service.ErrReviewerNotAssigned
-		case errors.Is(err, repository.ErrNoReplacementCandidate):
-			return nil, service.ErrNoReplacementCandidate
-		default:
-			return nil, service.ErrInternalError
-		}
+		return nil, error_wrapper.WrapRepositoryError(err)
 	}
 
 	resp := &dto.PullRequestReassignResponse{

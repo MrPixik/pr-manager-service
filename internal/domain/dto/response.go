@@ -2,6 +2,10 @@ package dto
 
 import "time"
 
+type PingResponse struct {
+	Message string `json:"message"`
+}
+
 type AddTeamResponse struct {
 	TeamName string               `json:"team_name"`
 	Members  []TeamMemberResponse `json:"members"`

@@ -14,7 +14,9 @@ import (
 	"service-order-avito/internal/http/server/handlers/team"
 	"service-order-avito/internal/http/server/handlers/user"
 	"service-order-avito/internal/repository/postgres"
-	"service-order-avito/internal/service"
+	pull_request2 "service-order-avito/internal/service/pull_request"
+	team2 "service-order-avito/internal/service/team"
+	user2 "service-order-avito/internal/service/user"
 	"service-order-avito/pkg/logger"
 	"syscall"
 )
@@ -53,9 +55,9 @@ func main() {
 	log.Info("repository's lay initialized")
 
 	// Service lay
-	teamService := service.NewTeamService(teamRepo)
-	userService := service.NewUserService(userRepo)
-	prService := service.NewPullRequestService(prRepo)
+	teamService := team2.NewTeamService(teamRepo)
+	userService := user2.NewUserService(userRepo)
+	prService := pull_request2.NewPullRequestService(prRepo)
 	log.Info("service's lay initialized")
 
 	// Controller's lay

@@ -58,6 +58,7 @@ func (r *teamRepositoryPostgres) GetTeamWithMembers(ctx context.Context, teamNam
 	}, nil
 }
 
+// ручка проверяет существование команды
 func (r *teamRepositoryPostgres) GetTeamWithMembersTx(ctx context.Context, tx pgx.Tx, teamName string) (*domain.TeamWithUsers, error) {
 	var team domain.Team
 	err := tx.QueryRow(ctx, `SELECT team_name FROM teams WHERE team_name=$1`, teamName).Scan(&team.Name)
@@ -116,8 +117,12 @@ func (r *teamRepositoryPostgres) InsertTx(ctx context.Context, tx pgx.Tx, team d
 }
 
 func (r *teamRepositoryPostgres) GetByName(ctx context.Context, name string) (*domain.Team, error) {
+	queryGetTeam := `SELECT team_name
+		FROM teams
+		WHERE team_name=$1
+		`
 	var team domain.Team
-	err := r.pool.QueryRow(ctx, `SELECT team_name FROM teams WHERE team_name=$1`, name).
+	err := r.pool.QueryRow(ctx, queryGetTeam, name).
 		Scan(&team.Name)
 	if err != nil {
 		switch {

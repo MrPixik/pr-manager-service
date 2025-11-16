@@ -1,14 +1,13 @@
-package service
+package team
 
 import (
 	"context"
-	"errors"
 	"service-order-avito/internal/domain"
 	"service-order-avito/internal/domain/dto"
-	"service-order-avito/internal/domain/errors/repository"
-	"service-order-avito/internal/domain/errors/service"
+	"service-order-avito/internal/service/error_wrapper"
 )
 
+// mockgen -source="internal/service/team/team.go" -destination="internal/service/team/mocks/mock_team_repository.go" -package=mocks TeamRepository
 type TeamRepository interface {
 	AddTeamWithMembers(context.Context, domain.Team, []domain.User) error
 	GetTeamWithMembers(context.Context, string) (*domain.TeamWithUsers, error)
@@ -36,12 +35,7 @@ func (s *teamService) AddTeam(ctx context.Context, req *dto.TeamAddRequest) (*dt
 	}
 
 	if err := s.repo.AddTeamWithMembers(ctx, team, members); err != nil {
-		switch {
-		case errors.Is(err, repository.ErrTeamAlreadyExists):
-			return nil, service.ErrTeamAlreadyExists
-		default:
-			return nil, service.ErrInternalError
-		}
+		return nil, error_wrapper.WrapRepositoryError(err)
 	}
 
 	respMembers := make([]dto.TeamMemberResponse, len(members))
@@ -64,12 +58,7 @@ func (s *teamService) AddTeam(ctx context.Context, req *dto.TeamAddRequest) (*dt
 func (s *teamService) GetTeam(ctx context.Context, req *dto.GetTeamRequest) (*dto.GetTeamResponse, error) {
 	agg, err := s.repo.GetTeamWithMembers(ctx, req.TeamName)
 	if err != nil {
-		switch err {
-		case repository.ErrTeamNotFound:
-			return nil, service.ErrTeamNotFound
-		default:
-			return nil, service.ErrInternalError
-		}
+		return nil, error_wrapper.WrapRepositoryError(err)
 	}
 
 	members := make([]dto.TeamMemberResponse, len(agg.Members))

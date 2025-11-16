@@ -9,6 +9,9 @@ run_tests:
 	go test -v ./internal/http/server/handlers/user
 	go test -v ./internal/http/server/handlers/team
 	go test -v ./internal/http/server/handlers/pull_request
+	go test -v ./internal/service/user
+	go test -v ./internal/service/team
+	go test -v ./internal/service/pull_request
 
 up_prod: # запуск всего сервера (подгружается образ с моего dockerHub)
 	docker-compose -f docker-compose.prod.yaml up -d
