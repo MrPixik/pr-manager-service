@@ -17,14 +17,14 @@ up_prod: # запуск всего сервера (подгружается об
 	docker-compose -f docker-compose.prod.yaml up -d
 
 down_prod: # остановка всех контейнеров
-	docker compose stop service-courier
-	docker compose stop migrations
-	docker compose stop postgres
+	docker compose -f docker-compose.prod.yaml stop pr-manager-service
+	docker compose -f docker-compose.prod.yaml stop migrations
+	docker compose -f docker-compose.prod.yaml stop postgres
 
 deploy_local: #для личного удобства
-	docker build -t courier-service:latest -f ./deploy/docker/Dockerfile .
+	docker build -t pr-manager-service:latest -f ./deploy/docker/Dockerfile .
 
 deploy_push_remote: #для личного удобства
 	docker login
-	docker tag courier-service:latest pixik/courier-service:latest
-	docker push pixik/courier-service:latest
+	docker tag pr-manager-service:latest pixik/pr-manager-service:latest
+	docker push pixik/pr-manager-service:latest

@@ -3,11 +3,9 @@ package user
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"service-order-avito/internal/domain/dto"
 	"service-order-avito/internal/domain/errors/server"
-	"service-order-avito/internal/domain/errors/service"
 	"service-order-avito/internal/http/codes"
 	"service-order-avito/pkg/http/error_wrapper"
 )
@@ -35,12 +33,7 @@ func (h *userHandler) SetIsActive(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.userService.SetIsActive(r.Context(), &req)
 	if err != nil {
-		switch {
-		case errors.Is(err, service.ErrUserNotFound):
-			error_wrapper.WriteError(w, codes.NOT_FOUND, server.ErrUserNotFound, http.StatusNotFound)
-		default:
-			error_wrapper.WriteError(w, codes.INTERNAL_ERROR, server.ErrInternalError, http.StatusInternalServerError)
-		}
+		error_wrapper.WriteServiceError(w, err)
 		return
 	}
 
@@ -59,12 +52,7 @@ func (h *userHandler) GetReviewPullRequests(w http.ResponseWriter, r *http.Reque
 
 	resp, err := h.userService.GetReviewPullRequests(r.Context(), &req)
 	if err != nil {
-		switch {
-		case errors.Is(err, service.ErrUserNotFound):
-			error_wrapper.WriteError(w, codes.NOT_FOUND, server.ErrUserNotFound, http.StatusNotFound)
-		default:
-			error_wrapper.WriteError(w, codes.INTERNAL_ERROR, server.ErrInternalError, http.StatusInternalServerError)
-		}
+		error_wrapper.WriteServiceError(w, err)
 		return
 	}
 

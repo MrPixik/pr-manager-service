@@ -38,3 +38,7 @@ type PullRequestReassignRequest struct {
 type GetReviewPRRequest struct {
 	UserID string `json:"user_id"`
 }
+
+type GetTeamStatsRequest struct {
+	TeamName string `json:"team_name"`
+}

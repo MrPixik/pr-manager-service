@@ -49,6 +49,24 @@ func (mr *MockTeamRepositoryMockRecorder) AddTeamWithMembers(arg0, arg1, arg2 in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTeamWithMembers", reflect.TypeOf((*MockTeamRepository)(nil).AddTeamWithMembers), arg0, arg1, arg2)
 }
 
+// GetTeamStats mocks base method.
+func (m *MockTeamRepository) GetTeamStats(arg0 context.Context, arg1 string) (int, int, int, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTeamStats", arg0, arg1)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(int)
+	ret3, _ := ret[3].(int)
+	ret4, _ := ret[4].(error)
+	return ret0, ret1, ret2, ret3, ret4
+}
+
+// GetTeamStats indicates an expected call of GetTeamStats.
+func (mr *MockTeamRepositoryMockRecorder) GetTeamStats(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeamStats", reflect.TypeOf((*MockTeamRepository)(nil).GetTeamStats), arg0, arg1)
+}
+
 // GetTeamWithMembers mocks base method.
 func (m *MockTeamRepository) GetTeamWithMembers(arg0 context.Context, arg1 string) (*domain.TeamWithUsers, error) {
 	m.ctrl.T.Helper()

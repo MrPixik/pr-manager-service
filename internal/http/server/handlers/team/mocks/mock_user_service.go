@@ -64,3 +64,18 @@ func (mr *MockTeamServiceMockRecorder) GetTeam(arg0, arg1 interface{}) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeam", reflect.TypeOf((*MockTeamService)(nil).GetTeam), arg0, arg1)
 }
+
+// GetTeamStats mocks base method.
+func (m *MockTeamService) GetTeamStats(arg0 context.Context, arg1 *dto.GetTeamStatsRequest) (*dto.TeamStatsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTeamStats", arg0, arg1)
+	ret0, _ := ret[0].(*dto.TeamStatsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTeamStats indicates an expected call of GetTeamStats.
+func (mr *MockTeamServiceMockRecorder) GetTeamStats(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeamStats", reflect.TypeOf((*MockTeamService)(nil).GetTeamStats), arg0, arg1)
+}

@@ -11,6 +11,7 @@ import (
 type TeamRepository interface {
 	AddTeamWithMembers(context.Context, domain.Team, []domain.User) error
 	GetTeamWithMembers(context.Context, string) (*domain.TeamWithUsers, error)
+	GetTeamStats(context.Context, string) (activeUsers, inactiveUsers, openPRs, mergedPRs int, err error)
 }
 
 type teamService struct {
@@ -73,5 +74,20 @@ func (s *teamService) GetTeam(ctx context.Context, req *dto.GetTeamRequest) (*dt
 	return &dto.GetTeamResponse{
 		TeamName: agg.TeamName,
 		Members:  members,
+	}, nil
+}
+func (s *teamService) GetTeamStats(ctx context.Context, req *dto.GetTeamStatsRequest) (*dto.TeamStatsResponse, error) {
+
+	activeUsers, inactiveUsers, openPRs, mergedPRs, err := s.repo.GetTeamStats(ctx, req.TeamName)
+	if err != nil {
+		return nil, error_wrapper.WrapRepositoryError(err)
+	}
+
+	return &dto.TeamStatsResponse{
+		TeamName:      req.TeamName,
+		ActiveUsers:   activeUsers,
+		InactiveUsers: inactiveUsers,
+		OpenPRs:       openPRs,
+		MergedPRs:     mergedPRs,
 	}, nil
 }

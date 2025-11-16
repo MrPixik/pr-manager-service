@@ -35,9 +35,9 @@ services:
     networks:
       - local
 
-  service-courier:
+  pr-manager-service:
     image: pixik/pr-manager-service:latest
-    container_name: pr-manager-courier
+    container_name: pr-manager-service
     environment:
       - ENVIRONMENT=prod
     env_file:

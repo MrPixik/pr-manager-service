@@ -134,3 +134,34 @@ func (r *teamRepositoryPostgres) GetByName(ctx context.Context, name string) (*d
 	}
 	return &team, nil
 }
+
+// GetTeamStats возвращает статистику по команде:
+// количество активных и неактивных пользователей,
+// количество открытых и замерженных PR
+func (r *teamRepositoryPostgres) GetTeamStats(ctx context.Context, teamName string) (activeUsers, inactiveUsers, openPRs, mergedPRs int, err error) {
+	sql := `
+	SELECT 
+		COUNT(DISTINCT u.user_id) FILTER (WHERE u.is_active) AS active_users,
+		COUNT(DISTINCT u.user_id) FILTER (WHERE NOT u.is_active) AS inactive_users,
+		COUNT(pr.pull_request_id) FILTER (WHERE pr.status='OPEN') AS open_prs,
+		COUNT(pr.pull_request_id) FILTER (WHERE pr.status='MERGED') AS merged_prs
+	FROM teams t
+	LEFT JOIN users u ON u.team_name = t.team_name
+	LEFT JOIN pull_requests pr ON pr.author_id = u.user_id
+	WHERE t.team_name = $1
+	GROUP BY t.team_name
+	`
+
+	row := r.pool.QueryRow(ctx, sql, teamName)
+	err = row.Scan(&activeUsers, &inactiveUsers, &openPRs, &mergedPRs)
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return 0, 0, 0, 0, repository.ErrTeamNotFound
+		default:
+			return 0, 0, 0, 0, repository.ErrInternalError
+		}
+	}
+
+	return activeUsers, inactiveUsers, openPRs, mergedPRs, nil
+}

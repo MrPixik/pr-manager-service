@@ -73,3 +73,11 @@ type GetReviewPRResponse struct {
 	UserID       string                     `json:"user_id"`
 	PullRequests []PullRequestShortResponse `json:"pull_requests"`
 }
+
+type TeamStatsResponse struct {
+	TeamName      string `json:"team_name"`
+	ActiveUsers   int    `json:"active_users"`
+	InactiveUsers int    `json:"inactive_users"`
+	OpenPRs       int    `json:"open_prs"`
+	MergedPRs     int    `json:"merged_prs"`
+}

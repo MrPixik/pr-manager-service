@@ -11,6 +11,7 @@ import (
 type TeamHandler interface {
 	AddTeam(http.ResponseWriter, *http.Request)
 	GetTeam(http.ResponseWriter, *http.Request)
+	GetTeamStats(http.ResponseWriter, *http.Request)
 }
 
 type UserHandler interface {
@@ -41,6 +42,7 @@ func InitRouter(log *slog.Logger,
 	router.Route("/team", func(r chi.Router) {
 		r.Post("/add", teamHandler.AddTeam)
 		r.Get("/get", teamHandler.GetTeam)
+		r.Get("/stats", teamHandler.GetTeamStats)
 	})
 
 	router.Route("/users", func(r chi.Router) {
